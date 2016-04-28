@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+var instance = require('../index');
+var http = require('http');
+var server = http.createServer(instance);
+
+server.listen(3000, function() {
+  console.log('Listening on 3000');
+});
+
+/*server.on('close', function() {
+  console.log('Server closed');
+});*/

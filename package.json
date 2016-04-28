@@ -1,0 +1,40 @@
+{
+  "name": "slack-trax-server",
+  "version": "1.0.0",
+  "description": "Trax interface for Slack",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nattelog/slack-trax-server.git"
+  },
+  "author": "Natanael Log <natte.log@gmail.com> (www.natanael.se)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nattelog/slack-trax-server/issues"
+  },
+  "homepage": "https://github.com/nattelog/slack-trax-server#readme",
+  "devDependencies": {
+    "google-spreadsheet": "^2.0.1",
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
+    "grunt-concurrent": "^2.3.0",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-nodeunit": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-express-server": "^0.5.3",
+    "grunt-nodemon": "^0.4.2",
+    "grunt-parallel": "^0.4.1",
+    "grunt-task-loader": "^0.6.0",
+    "nodeunit-httpclient": "^0.2.1"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "grunt-forever": "^0.4.7",
+    "morgan": "^1.7.0",
+    "node-trax": "^1.0.0"
+  }
+}
