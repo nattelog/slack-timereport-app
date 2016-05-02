@@ -1,13 +1,14 @@
 var GoogleSpreadsheet = require('google-spreadsheet');
 var async = require('async');
-var config = require('./config');
-var creds = require('./credentials.json');
+var config = require('../config');
+var creds = require('../credentials.json');
 var api = require('nodeunit-httpclient').create({
-  port: 3000
+  port: 3000,
+  status: 200
 });
 
 
-var doc = new GoogleSpreadsheet(config.spreadsheet.token);
+var doc = new GoogleSpreadsheet(config.spreadsheet.test);
 var sheet;
 var user = 'Default';
 
@@ -27,7 +28,7 @@ exports.setupDoc = function(test) {
     function authenticate(step) {
       doc.useServiceAccountAuth(creds, step);      
     },
-
+    
     function getSheet(step) {
       doc.getInfo(function(err, info) {
 	sheet = info.worksheets[0];
@@ -68,10 +69,8 @@ exports.testBadRequest = function(test) {
     data: {
       token: 'bad_token'
     }
-  }, {
-    status: 500
   }, function(res) {
-    test.equal(res.data.message, 'Bad access token', 'Error message should be this');
+    test.equal(res.data.text, 'YOU SHALL NOT PASS!');
     test.done();
   });
 };
@@ -83,22 +82,8 @@ exports.testBadCommand = function(test) {
       token: config.slack.token,
       command: 'bad_command'
     }
-  }, {
-    status: 500
   }, function(res) {
-    test.equal(res.data.message, 'Bad command', 'Error message should be this');
-    test.done();
-  });
-};
-
-
-exports.testTester = function(test) {
-  api.post(test, '/track', {
-    data: createSlackRequest('test')
-  }, {
-    status: 200
-  }, function(res) {
-    test.equal(res.data.text, 'Well, thank you for that.', 'Response message should be this');
+    test.equal(res.data.text, 'I don\'t obey commands like that!');
     test.done();
   });
 };
@@ -116,9 +101,7 @@ exports.testSSLCheck = function(test) {
 
 exports.testManualTrack = function(test) {
   api.post(test, '/track', {
-    data: createSlackRequest('6 to 8 with Working with stuff')
-  }, {
-    status: 200
+    data: createSlackRequest('-f 6 -t 8 Working with stuff')
   }, function(res) {
     sheet.getRows(function(err, rows) {
       test.ifError(err);

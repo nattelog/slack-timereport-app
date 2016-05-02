@@ -7,6 +7,7 @@
 
 var express = require('express');
 var morgan = require('morgan');
+var assert = require('assert');
 var bodyParser = require('body-parser');
 var traxParser = require('./lib/trax-parser');
 var trax = require('node-trax');
@@ -35,14 +36,42 @@ app.get(config.slack.command, function(req, res, next) {
 
 
 /**
- * Make sure request has the correct token and command.
+ * Verify Slack request and interpret the track arguments.
  */
-app.use(function(req, res, next) {
-  if (req.body.token !== config.slack.token) {
-    next(new Error('Bad access token'));
-  }
-  else if (req.body.command !== config.slack.command) {
-    next(new Error('Bad command'));
+app.post(config.slack.command, function(req, res, next) {
+  assert(req.body.token === config.slack.token, 'YOU SHALL NOT PASS!');
+  assert(req.body.command === config.slack.command, 'I don\'t obey commands like that!');
+  assert(req.body.text, 'Are you really not going to write something?');
+  assert(req.body.user_name, 'I\'m not sure who you are.');
+
+  var text = require('minimist')(req.body.text.split(' '), {
+    default: {
+      d: 'today',
+      f: 'latest',
+      t: 'now'
+    }
+  });
+
+  req.trax = {
+    user: req.body.user_name.toLowerCase(),
+    date: text.d,
+    from: text.f,
+    to: text.t,
+    description: text._.join(' ').trim()
+  };
+
+  next();
+});
+
+
+/**
+* Check for 'help' command.
+*/
+app.post(config.slack.command, function(req, res, next) {
+  assert(req.trax.description, 'Trax object is not defined');
+
+  if (req.trax.description == 'help') {
+    next(new Error('Help is on the way!'));
   }
   else {
     next();
@@ -51,34 +80,32 @@ app.use(function(req, res, next) {
 
 
 /**
- * Interpret /track arguments received from Slack.
+ * Initialize Trax with the Google Spreadsheet.
  */
-app.use(traxParser);
+app.post(config.slack.command, function(req, res, next) {
+  var creds = require('./credentials');
+  trax.init(config.spreadsheet.test, creds, next);
+});
 
 
 /**
- * Initialize Trax with the Google Spreadsheet.
+ * Add track to the spreadsheet.
  */
-app.use(function(req, res, next) {
-  var creds = require('./credentials');
-  trax.init(config.spreadsheet.token, creds, next);
+app.post(config.slack.command, function(req, res, next) {
+  next();
 });
 
 
 app.use(function(req, res, next) {
-  var err = new Error('Route not found');
-  err.status = 404;
+  var err = new Error('Hm, I did not found the route you issued the command on.');
   next(err);
 });
 
 
 app.use(function(err, req, res, next) {
-  err.status = err.status || 500;
-  res.status(err.status);
+  res.status(200);
   res.send({
-    status: err.status,
-    message: err.message,
-    error: err
+    text: err.message
   });
 });
 

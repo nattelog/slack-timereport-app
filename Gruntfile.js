@@ -1,49 +1,44 @@
 module.exports = function(grunt) {
   grunt.initConfig({
-    /*concurrent: {
-      dev: {
-	tasks: ['nodemon:dev', 'watch:dev'],
-	options: {
-	  logConcurrentOutput: true
-	}
-      }
-    },*/
-    
     jshint: {
-      all: ['index.js', 'test.js', 'lib/*.js']
+      all: ['index.js', 'test/*.js', 'lib/*.js']
     },
 
     nodeunit: {
-      all: ['test.js'],
+      all: ['test'],
       options: {
 	reporter: 'default'
       }
     },
 
     watch: {
+      options: {
+	atBegin: true
+      },
       dev: {
-	files: ['index.js', 'test.js', 'lib/*.js'],
-	tasks: ['express:dev', 'jshint', 'nodeunit', 'express:dev:stop'],
+	files: ['index.js', 'test/*.js', 'lib/*.js'],
+	tasks: ['express:dev', 'jshint', 'nodeunit', 'express:dev:stop']
+      },
+      prod: {
+	files: ['index.js', 'lib/*.js'],
+	tasks: ['express:prod'],
 	options: {
-	  spawn: true,
-	  atBegin: true
+	  spawn: false
 	}
       }
     },
 
-    /*nodemon: {
-      dev: {
-	script: 'bin/www',
-	options: {
-	  ignore: ['test.js', 'Gruntfile.js', 'lib/**']
-	}
-      }
-      }*/
-
     express: {
       dev: {
 	options: {
-	  script: 'bin/www'
+	  script: 'bin/www',
+	  port: 3001
+	}
+      },
+      prod: {
+	options: {
+	  script: 'bin/www',
+	  port: 3000
 	}
       }
     }
@@ -52,5 +47,6 @@ module.exports = function(grunt) {
   require('grunt-task-loader')(grunt);
   grunt.loadNpmTasks('grunt-express-server');
 
-  grunt.registerTask('dev', ['watch']);
+  grunt.registerTask('dev', ['watch:dev']);
+  grunt.registerTask('prod', ['watch:prod']);
 };
