@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     },
 
     nodeunit: {
-      all: ['test'],
+      all: ['test/*-tests.js'],
       options: {
 	reporter: 'default'
       }
@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 	tasks: ['express:dev', 'jshint', 'nodeunit', 'express:dev:stop']
       },
       prod: {
-	files: ['index.js', 'lib/*.js'],
+	files: ['index.js', 'lib/*.js', 'config.js'],
 	tasks: ['express:prod'],
 	options: {
 	  spawn: false
@@ -32,13 +32,15 @@ module.exports = function(grunt) {
       dev: {
 	options: {
 	  script: 'bin/www',
-	  port: 3001
+	  port: 3001,
+	  node_env: 'dev'
 	}
       },
       prod: {
 	options: {
 	  script: 'bin/www',
-	  port: 3000
+	  port: 3000,
+	  node_env: 'prod'
 	}
       }
     }
