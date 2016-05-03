@@ -44,6 +44,21 @@ app.get(config.slack.command, function(req, res, next) {
 });
 
 
+app.use(function(req, res, next) {
+  var response_url = req.body.response_url;
+
+  if (!response_url) {
+    res.send({
+      text: 'Your request is lacking an address where I can respond.'
+    });
+  }
+  else {
+    slack = new Slack(response_url);
+    next();
+  }
+});
+
+
 /**
  * Verify Slack request and interpret the track arguments.
  */
@@ -145,7 +160,6 @@ app.post(config.slack.command, function(req, res, next) {
   }
   
   tr.init(token, creds, next);
-  slack = new Slack(req.body.response_url);
 });
 
 
