@@ -201,6 +201,26 @@ exports.testTrackToday = function(test) {
 };
 
 
+exports.testTrackOddMinute = function(test) {
+  async.series([
+    function track(step) {
+      tr.track(user, 'today', '10', '11:11', 'Working odd minutes', function(err) {
+	test.ifError(err);
+	step();
+      });
+    },
+
+    function check(step) {
+      tr.status(user, function(err, status) {
+	test.ifError(err);
+	test.equal(status.latestDate.getMinutes(), 15);
+	test.done();
+      });
+    }
+  ]);
+};
+
+
 /*exports.testTrackWithDifferentDays = function(test) {
   var t1 = new Date();
   var t2 = new Date();
