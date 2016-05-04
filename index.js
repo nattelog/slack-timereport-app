@@ -53,7 +53,7 @@ app.use(function(req, res, next) {
     });
   }
   else {
-    slack = new Slack(response_url);
+    //slack = new Slack(response_url);
     next();
   }
 });
@@ -175,7 +175,7 @@ app.post(config.slack.command, function(req, res, next) {
 	next(err);
       }
       else {
-	console.log(status);
+	slack = new Slack(req.body.response_url);
 	var h = status.total.hours;
 	var m = status.total.minutes;
 	var date = format(status.latestDate, 'yy-mm-dd H:MM');
@@ -225,6 +225,8 @@ app.post(config.slack.command, function(req, res, next) {
       next(err);
     }
     else {
+      slack = new Slack(req.body.response_url);
+      
       // format pretty response
       var start = format(row.start, 'yy-mm-dd H:MM');
       var end = format(row.end, 'H:MM');
@@ -248,6 +250,13 @@ app.use(function(req, res, next) {
 
 
 app.use(function(err, req, res, next) {
+  if (!slack || req.body.response_url == 'localhost') {
+    slack = res;
+  }
+  else {
+    slack = new Slack(req.body.response_url);
+  }
+  
   slack.send({
     text: 'Blastering barnacles!',
     attachments: [

@@ -25,21 +25,14 @@ function createSlackRequest(text) {
 }
 
 
-/*exports.setupDoc = function(test) {
-  util.setupGoogleSpreadsheet(token, creds, user, function(_sheet) {
-    sheet = _sheet;
-    test.done();
-  });
-};*/
-
-
 exports.testBadRequest = function(test) {
   api.post(test, '/track', {
     data: {
-      token: 'bad_token'
+      token: 'bad_token',
+      response_url: 'localhost'
     }
   }, function(res) {
-    test.equal(res.data.text, 'YOU SHALL NOT PASS!');
+    test.equal(res.data.attachments[0].text, 'YOU SHALL NOT PASS!');
     test.done();
   });
 };
@@ -49,10 +42,11 @@ exports.testBadCommand = function(test) {
   api.post(test, '/track', {
     data: {
       token: config.slack.test.token,
-      command: 'bad_command'
+      command: 'bad_command',
+      response_url: 'localhost'
     }
   }, function(res) {
-    test.equal(res.data.text, 'I don\'t obey commands like that!');
+    test.equal(res.data.attachments[0].text, 'I don\'t obey commands like that!');
     test.done();
   });
 };
