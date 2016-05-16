@@ -9,12 +9,16 @@ var express = require('express');
 var morgan = require('morgan');
 var assert = require('assert');
 var bodyParser = require('body-parser');
+var helmet = require('helmet');
 var tr = require('./lib/tr');
 var config = require('./config');
 var Slack = require('node-slack');
 var slack;
 var format = require('dateformat');
 var app = express();
+
+
+app.use(helmet());
 
 
 /**
