@@ -13,7 +13,6 @@ var helmet = require('helmet');
 var tr = require('./lib/tr');
 var config = require('./config');
 var Slack = require('node-slack');
-var slack;
 var format = require('dateformat');
 var app = express();
 
@@ -48,16 +47,17 @@ app.get(config.slack.command, function(req, res, next) {
 });
 
 
+/**
+ * Make sure the request has a return url address.
+ */
 app.use(function(req, res, next) {
   var response_url = req.body.response_url;
-
+  
   if (!response_url) {
-    res.send({
-      text: 'Your request is lacking an address where I can respond.'
-    });
+    next(new Error('Your request is lacking an address where I can respond'));
   }
   else {
-    //slack = new Slack(response_url);
+    req.slack = new Slack(response_url);
     next();
   }
 });
@@ -168,8 +168,8 @@ app.post(config.slack.command, function(req, res, next) {
 
 
 /**
-* Check for 'status' command.
-*/
+ * Check for 'status' command.
+ */
 app.post(config.slack.command, function(req, res, next) {
   if (req.tr.description == 'status') {
     res.send({text:'Got it, hold on.'});
@@ -179,13 +179,12 @@ app.post(config.slack.command, function(req, res, next) {
 	next(err);
       }
       else {
-	slack = new Slack(req.body.response_url);
 	var h = status.total.hours;
 	var m = status.total.minutes;
 	var date = format(status.latestDate, 'yy-mm-dd H:MM');
 	var description = status.latestDescription;
 	
-	slack.send({
+	req.slack.send({
 	  text: 'Done!',
 	  attachments: [
 	    {
@@ -229,13 +228,11 @@ app.post(config.slack.command, function(req, res, next) {
       next(err);
     }
     else {
-      slack = new Slack(req.body.response_url);
-      
       // format pretty response
       var start = format(row.start, 'yy-mm-dd H:MM');
       var end = format(row.end, 'H:MM');
       
-      slack.send({
+      req.slack.send({
 	text: 'Done!',
 	attachments: [{
 	  color: 'good',
@@ -254,14 +251,11 @@ app.use(function(req, res, next) {
 
 
 app.use(function(err, req, res, next) {
-  if (!slack || req.body.response_url == 'localhost') {
-    slack = res;
-  }
-  else {
-    slack = new Slack(req.body.response_url);
+  if (!req.slack || req.body.response_url == 'localhost') {
+    req.slack = res;
   }
   
-  slack.send({
+  req.slack.send({
     text: 'Blastering barnacles!',
     attachments: [
       {
