@@ -7,3 +7,5 @@ forever
 
 config.js
 credentials.json
+
+*.log
