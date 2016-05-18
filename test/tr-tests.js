@@ -240,6 +240,7 @@ exports.testTrackLastWeek = function(test) {
 
     function check(step) {
       tr.status(user, function(err, status) {
+	console.log(status);
 	test.ifError(err);
 	test.equals(status.weekTotal.hours, 4);
 	test.done();

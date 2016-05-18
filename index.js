@@ -198,7 +198,7 @@ app.post(config.slack.command, function(req, res, next) {
 		},
 		{
 		  title: 'This week\'s total',
-		  value: wh + ':' + m,
+		  value: wh + ':' + wm,
 		  short: true
 		},
 		{
