@@ -219,3 +219,31 @@ exports.testTrackOddMinute = function(test) {
     }
   ]);
 };
+
+
+// NOTE! This test does not pass on a monday
+exports.testTrackLastWeek = function(test) {
+  // create a date that is last week
+  var d = new Date();
+  var s;
+
+  d.setDate(d.getDate() - 7);
+  s = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+  
+  async.series([
+    function track(step) {
+      tr.track(user, s, '8', '10', 'Tracking last week', function(err) {
+	test.ifError(err);
+	step();
+      });
+    },
+
+    function check(step) {
+      tr.status(user, function(err, status) {
+	test.ifError(err);
+	test.equals(status.weekTotal.hours, 4);
+	test.done();
+      });
+    }
+  ]);
+};
