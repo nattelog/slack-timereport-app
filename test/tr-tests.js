@@ -157,7 +157,7 @@ exports.testTrackWithWorkingParameters = function(test) {
       sheet.getRows(function(err, rows) {
 	test.ifError(err);
 	test.equal(rows.length, 1, 'There should be one row');
-	test.done();
+	step();
       });
     },
 

@@ -181,6 +181,8 @@ app.post(config.slack.command, function(req, res, next) {
       else {
 	var h = status.total.hours;
 	var m = status.total.minutes;
+	var wh = status.weekTotal.hours;
+	var wm = status.weekTotal.minutes;
 	var date = format(status.latestDate, 'yy-mm-dd H:MM');
 	var description = status.latestDescription;
 	
@@ -193,6 +195,11 @@ app.post(config.slack.command, function(req, res, next) {
 		{
 		  title: 'Last track',
 		  value: date + ', \"' + description + '\".'
+		},
+		{
+		  title: 'This week\'s total',
+		  value: wh + ':' + m,
+		  short: true
 		},
 		{
 		  title: 'Total',
